@@ -21,7 +21,7 @@
 #include <string.h>
 
 /* 修改接收短信的手机号码 */
-const char num[]     = "10086";
+const char num[]     = "15694266242"; // LSY
 char namenum[20 * 4] = {0}, str[512] = {0}, gbkstr[256] = {0}, namegbk[256] = {0};
 char testbuff[100];
 uint8_t len;
@@ -44,45 +44,45 @@ int main(void)
     SysTick_Init();
 
     /* 程序测试 */
-    printf("\r\n程序测试开始\r\n");
+    printf("程序测试开始 \n");
 
     /* 测试模块响应是否正常 */
     while (gsm_init() != GSM_TRUE) {
-        printf("\r\nGSM模块响应测试不正常\r\n");
-        printf("\r\n若GSM模块响应测一直不正常,请检查GSM模块的连接或电源开关\r\n");
+        printf("GSM模块响应测试不正常 \n");
+        printf("请检查GSM模块的链接或电源开关 \n");
         GSM_DELAY(500);
     }
-    printf("\r\n通过了GSM模块响应测试, 5s后开始进行拨号测试\r\n");
+    printf("通过了GSM模块响应测试, 5s后开始进行拨号测试 \n");
     GSM_DELAY(5000); 
 
 	//先执行次设置文本模式
 	if(gsm_cmd("AT+CMGF=1\r","OK", 100) != GSM_TRUE)
 	{
-		printf("\r\n设置文本模式错误\r\n");
+		printf("设置文本模式错误 \n");
 	}
 	GSM_DELAY(1000); 	
 
-    printf("\r\n正在等待GSM模块初始化...\r\n");
+    printf("正在等待GSM模块初始化... \n");
 	while(IsInsertCard() != GSM_TRUE)
 	{
 		
 		if(++testCard >20)
 		{
-			printf("\r\n检测不到电话卡，请断电并重新接入电话卡\r\n");
+			printf("检测不到电话卡，请断电并重新接入电话卡 \n");
 		}
 		GSM_DELAY(1000); 		
 	}		
     /* 拨号测试 */
-    printf("\r\n初始化完成，5秒后开始拨号测试... \r\n");
+    printf("初始化完成，5秒后开始拨号测试...  \n");
     /* 延时五秒 */
     GSM_DELAY(5000);
     /* 拨打电话 */
-    gsm_call("112"); // 拨打112电话测试
+    gsm_call("15694266242"); // 拨打lsy电话测试
     rebuff = gsm_waitask(0);
     /* 响应OK, 表示GSM模块正常接收到命令 */
     if (strstr(rebuff, "ATD") != NULL) 
     {
-        printf("\r\n正在呼叫\r\n");
+        printf("正在呼叫 \n");
         /* 清除接收缓冲区 */
         GSM_CLEAN_RX();          
         /* 重新等待消息 */
@@ -90,39 +90,39 @@ int main(void)
         /* 响应NO CARRIER, 通话结束 */
         if (strstr(rebuff, "NO CARRIER") != NULL)
         {
-            printf("\r\n通话结束\r\n");
+            printf("通话结束 \n");
         } 
         /* 响应NO ANSWER, 无人接听 */
         else if (strstr(rebuff, "NO ANSWER") != NULL)
         {
-            printf("\r\n您拨打的电话暂时无人接听, 请稍后再拨\r\n");
+            printf("您拨打的电话暂时无人接听, 请稍后再拨 \n");
         }
     }
     /* 清除接收缓冲区 */
     GSM_CLEAN_RX();
 
     /* 短信测试 */
-    printf("\r\n初始化完成，5秒后开始发送短信测试... \r\n");
+    printf("初始化完成，5秒后开始发送短信测试...  \n");
     /* 延时5秒再发送命令到模块 */
     GSM_DELAY(5000);    
     /* 发送英文短信 */
 	if(gsm_sms((char *)num,"GSM Test") == GSM_TRUE)
     {
-		printf("\r\n英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码\r\n",num);
+		printf("英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码 \n",num);
     }
 	else
 	{
-		printf("\r\n短信发送失败，请确认目标号码有效\r\n");
+		printf("短信发送失败，请确认目标号码有效 \n");
 	}
     GSM_DELAY(2000);    
 	/* 中英文短信，实际测试时请把电话号码修改成要接收短信的手机号 */
 	if(gsm_sms((char *)num,"GSM模块短信测试") == GSM_TRUE)
     {
-		printf("\r\n中英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码\r\n",num);
+		printf("中英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码 \n",num);
     }
 	else
 	{
-		printf("\r\n短信发送失败，请确认目标号码有效\r\n");
+		printf("短信发送失败，请确认目标号码有效 \n");
 		while(1);
 	}		
 
@@ -132,7 +132,8 @@ int main(void)
             /* 有来电电话 */
             if (IsRing(num) == GSM_TRUE)
             {
-                printf("Ringing:\nFrom:%s\n请按下KEY2接听或者按下KEY1挂断\n\r", num);
+                printf("Ringing: From:%s \n", num);
+                printf("请按下KEY2接听或者按下KEY1挂断 \n");
             }
             /* 重置计数因子 */
             timecount = 0;
@@ -163,14 +164,16 @@ int main(void)
         {
             IsRead = readmessage(newmessadd, namenum, str);
 
-            //			printf("newmessadd=%d,IsRead:%d\n",newmessadd,IsRead);
+            //			printf("newmessadd=%d,IsRead:%d \n",newmessadd,IsRead);
             if (IsRead)
             {
-                printf("\r\n新短信\n\r");
+                printf("新短信 \n");
 
                 hexuni2gbk(namenum, namegbk);
                 hexuni2gbk(str, gbkstr);
-                printf("\r\n新短信:\r\n发件人:%s\r\n内容:%s\r\n", namegbk, gbkstr);
+                printf("发件人: %s \n", namegbk);
+                printf("内容: \n");
+                printf("%s \n", gbkstr);
             }
         }
     }
