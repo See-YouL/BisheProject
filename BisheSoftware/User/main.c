@@ -1,108 +1,177 @@
 /**
-  ******************************************************************************
-  * @file    main.c
-  * @author  fire
-  * @version V1.0
-  * @date    2014-08-xx
-  * @brief   GSMģ��绰���Ų��Գ���
-  ******************************************************************************
-  * @attention
-  *
-  * ʵ��ƽ̨:Ұ�� F103-�Ե� STM32 ������ 
-  * ��̳    :http://www.firebbs.cn
-  * �Ա�    :https://fire-stm32.taobao.com
-  *
-  ******************************************************************************
-	*/
+ ******************************************************************************
+ * @file    main.c
+ * @author  Eric
+ * @version V1.0
+ * @date    2022-April-05
+ * @brief   主程序
+ ******************************************************************************
+ * @attention
+ *
+ *
+ ******************************************************************************
+ */
 #include "stm32f10x.h"
 #include "./usart/bsp_usart.h"
 #include "./gsm_gprs/bsp_gsm_usart.h"
 #include "./systick/bsp_SysTick.h"
 #include "./gsm_gprs/bsp_gsm_gprs.h"
-#include "./key/bsp_key.h" 
+#include "./key/bsp_key.h"
 #include "bsp_sdfs_app.h"
 #include <string.h>
 
-char    testbuff[100];
+/* 修改接收短信的手机号码 */
+const char num[]     = "10086";
+char namenum[20 * 4] = {0}, str[512] = {0}, gbkstr[256] = {0}, namegbk[256] = {0};
+char testbuff[100];
 uint8_t len;
-char *  rebuff;
+char *rebuff;
 
-/*
- * ���Ե绰���Ź���
- * 
- */
 int main(void)
 {
-	static uint8_t timecount=0;
-	char num[20]={0};
-    /* ����USART */
+    static uint8_t timecount = 0;
+    char num[20]             = {0};
+    uint8_t newmessadd = 0, IsRead = 0;
+    uint8_t testCard = 0;
+
+    /* DEBUG USART1 初始化 */
     USART_Config();
+    /* GSM USART2 初始化 */
+    GSM_USART_Config();
+    /* 按键初始化 */
     Key_GPIO_Config();
-    /* ��ʼ��ϵͳ��ʱ�� */
+    /* 系统定时器初始化 */
     SysTick_Init();
-    
-    printf("\r\nҰ��BH-GSMģ�鲦������\r\n");          
-    
-    
-    //���ģ����Ӧ�Ƿ�����
-    while(gsm_init()!= GSM_TRUE)
-    {
-      printf("\r\nģ����Ӧ���Բ���������\r\n");
-      printf("\r\n��ģ����Ӧ����һֱ������������ģ������ӻ��Ƿ��ѿ�����Դ����\r\n");
-			GSM_DELAY(500);
 
+    /* 程序测试 */
+    printf("\r\n程序测试开始\r\n");
+
+    /* 测试模块响应是否正常 */
+    while (gsm_init() != GSM_TRUE) {
+        printf("\r\nGSM模块响应测试不正常\r\n");
+        printf("\r\n若GSM模块响应测一直不正常,请检查GSM模块的连接或电源开关\r\n");
+        GSM_DELAY(500);
     }
-    
-    printf("\r\nͨ����ģ����Ӧ���ԣ�5���ʼ���Ų���...\r\n");
-    
-    /* ��ʱ3���ٷ������ģ�� */
-    GSM_DELAY(5000);
-    
-    //����绰
-  
-    gsm_call("112");                      //����112�绰����
-    rebuff = gsm_waitask(0);
-    if(strstr(rebuff,"ATD") != NULL)           //��ӦOK����ʾģ���������յ�����
-    {
-      printf("\r\n���ں���\r\n");
-      GSM_CLEAN_RX();                     //������ջ�����
-      rebuff = gsm_waitask(0);            //���µȴ���Ϣ
-     
-      if(strstr(rebuff,"NO CARRIER") != NULL) //��ӦNO CARRIER,ͨ������
-       {
-         printf("\r\nͨ������\r\n");
-       }
-      else if(strstr(rebuff,"NO ANSWER") != NULL)   //��ӦNO ANSWER�����˽���
-      {
-        printf("\r\n�㲦��ĵ绰��ʱ���˽��������Ժ��ٲ�\r\n");
-      }  
-    }
-	
-	GSM_CLEAN_RX();                     //������ջ�����
-	
-    while(1)
+    printf("\r\n通过了GSM模块响应测试, 5s后开始进行拨号测试\r\n");
+    GSM_DELAY(5000); 
+
+	//先执行次设置文本模式
+	if(gsm_cmd("AT+CMGF=1\r","OK", 100) != GSM_TRUE)
 	{
-		if(timecount>=100)
-		{
-			if(IsRing(num)== GSM_TRUE)
-			{
-				printf("Ringing:\nFrom:%s\n�밴��KEY2�������߰���KEY1�Ҷ�\n\r",num);	
-			}
-			timecount=0;
-		}
-		if( Key_Scan(KEY2_GPIO_PORT,KEY2_GPIO_PIN) == KEY_ON  )
-		{
-			GSM_HANGON();
-		}
-		if( Key_Scan(KEY1_GPIO_PORT,KEY1_GPIO_PIN) == KEY_ON  )
-		{
-			GSM_HANGOFF();
-		}	
-		timecount++;
-		GSM_DELAY(10);
+		printf("\r\n设置文本模式错误\r\n");
 	}
-	
+	GSM_DELAY(1000); 	
+
+    printf("\r\n正在等待GSM模块初始化...\r\n");
+	while(IsInsertCard() != GSM_TRUE)
+	{
+		
+		if(++testCard >20)
+		{
+			printf("\r\n检测不到电话卡，请断电并重新接入电话卡\r\n");
+		}
+		GSM_DELAY(1000); 		
+	}		
+    /* 拨号测试 */
+    printf("\r\n初始化完成，5秒后开始拨号测试... \r\n");
+    /* 延时五秒 */
+    GSM_DELAY(5000);
+    /* 拨打电话 */
+    gsm_call("112"); // 拨打112电话测试
+    rebuff = gsm_waitask(0);
+    /* 响应OK, 表示GSM模块正常接收到命令 */
+    if (strstr(rebuff, "ATD") != NULL) 
+    {
+        printf("\r\n正在呼叫\r\n");
+        /* 清除接收缓冲区 */
+        GSM_CLEAN_RX();          
+        /* 重新等待消息 */
+        rebuff = gsm_waitask(0); 
+        /* 响应NO CARRIER, 通话结束 */
+        if (strstr(rebuff, "NO CARRIER") != NULL)
+        {
+            printf("\r\n通话结束\r\n");
+        } 
+        /* 响应NO ANSWER, 无人接听 */
+        else if (strstr(rebuff, "NO ANSWER") != NULL)
+        {
+            printf("\r\n您拨打的电话暂时无人接听, 请稍后再拨\r\n");
+        }
+    }
+    /* 清除接收缓冲区 */
+    GSM_CLEAN_RX();
+
+    /* 短信测试 */
+    printf("\r\n初始化完成，5秒后开始发送短信测试... \r\n");
+    /* 延时5秒再发送命令到模块 */
+    GSM_DELAY(5000);    
+    /* 发送英文短信 */
+	if(gsm_sms((char *)num,"GSM Test") == GSM_TRUE)
+    {
+		printf("\r\n英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码\r\n",num);
+    }
+	else
+	{
+		printf("\r\n短信发送失败，请确认目标号码有效\r\n");
+	}
+    GSM_DELAY(2000);    
+	/* 中英文短信，实际测试时请把电话号码修改成要接收短信的手机号 */
+	if(gsm_sms((char *)num,"GSM模块短信测试") == GSM_TRUE)
+    {
+		printf("\r\n中英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码\r\n",num);
+    }
+	else
+	{
+		printf("\r\n短信发送失败，请确认目标号码有效\r\n");
+		while(1);
+	}		
+
+    while (1) {
+        if (timecount >= 100)
+        {
+            /* 有来电电话 */
+            if (IsRing(num) == GSM_TRUE)
+            {
+                printf("Ringing:\nFrom:%s\n请按下KEY2接听或者按下KEY1挂断\n\r", num);
+            }
+            /* 重置计数因子 */
+            timecount = 0;
+        }
+        /* 按下KEY2接听 */
+        if (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN) == KEY_ON) 
+        {
+            GSM_HANGON();
+        }
+        /* 按下KEY1挂断 */
+        if (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN) == KEY_ON) 
+        {
+            GSM_HANGOFF();
+        }
+        /* 计时因子递增 */
+        timecount++;
+        /* 短延时 */
+        GSM_DELAY(10);
+        
+        /* 等待接收短信 */
+        /**
+         * 该延时可以通过测试进行删除 
+         * 将拨号和短信置于同一延时下
+         */
+        GSM_DELAY(1000);
+        newmessadd = IsReceiveMS();
+        if (newmessadd)
+        {
+            IsRead = readmessage(newmessadd, namenum, str);
+
+            //			printf("newmessadd=%d,IsRead:%d\n",newmessadd,IsRead);
+            if (IsRead)
+            {
+                printf("\r\n新短信\n\r");
+
+                hexuni2gbk(namenum, namegbk);
+                hexuni2gbk(str, gbkstr);
+                printf("\r\n新短信:\r\n发件人:%s\r\n内容:%s\r\n", namegbk, gbkstr);
+            }
+        }
+    }
 }
-
-
-
