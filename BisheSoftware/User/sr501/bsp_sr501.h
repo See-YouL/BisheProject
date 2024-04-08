@@ -1,6 +1,15 @@
-#ifndef __EXTI_H
-#define	__EXTI_H
-
+/**
+ * @file bsp_sr501.h
+ * @author Eric(jff517680@gmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2024-04-08
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+#ifndef __BSP_SR501_H
+#define	__BSP_SR501_H
 
 #include "stm32f10x.h"
 
@@ -18,4 +27,4 @@
 void EXTI_SR501_Config(void);
 
 
-#endif /* __EXTI_H */
+#endif // __BSP_SR501_H

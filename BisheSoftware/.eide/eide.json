@@ -153,13 +153,22 @@
             "path": "User/main.c"
           },
           {
+            "path": "User/mq/bsp_mq.c"
+          },
+          {
             "path": "User/sdcard/bsp_sdfs_app.c"
           },
           {
             "path": "User/sdcard/bsp_sdio_sdcard.c"
           },
           {
+            "path": "User/sound/bsp_sound.c"
+          },
+          {
             "path": "User/sr501/bsp_exti.c"
+          },
+          {
+            "path": "User/sr501/bsp_sr501.c"
           },
           {
             "path": "User/stm32f10x_conf.h"
@@ -189,7 +198,9 @@
   },
   "targets": {
     "GSM_GPRS": {
-      "excludeList": [],
+      "excludeList": [
+        "<virtual_root>/USER/bsp_exti.c"
+      ],
       "toolchain": "AC5",
       "compileConfig": {
         "cpuType": "Cortex-M3",
@@ -336,7 +347,12 @@
           "Project/RVMDK（uv5）/RTE/_GSM_GPRS",
           ".eide/deps",
           "User/led",
-          "User/sr501"
+          "User/sr501",
+          "User/sound",
+          "User/mq",
+          "User/usart",
+          "User/gsm_gprs",
+          "User/SysTick"
         ],
         "libList": [],
         "sourceDirList": [],

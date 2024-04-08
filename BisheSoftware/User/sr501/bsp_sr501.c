@@ -1,21 +1,14 @@
 /**
- ******************************************************************************
- * @file    bsp_exti.c
- * @author  fire
- * @version V1.0
- * @date    2013-xx-xx
- * @brief   I/O线中断应用bsp
- ******************************************************************************
- * @attention
- *
- * 实验平台:野火 F103-霸道 STM32 开发板
- * 论坛    :http://www.firebbs.cn
- * 淘宝    :https://fire-stm32.taobao.com
- *
- ******************************************************************************
+ * @file bsp_sr501.c
+ * @author Eric(jff517680@gmail.com)
+ * @brief 
+ * @version 0.1
+ * @date 2024-04-08
+ * 
+ * @copyright Copyright (c) 2024
+ * 
  */
-
-#include "./sr501/bsp_exti.h"
+#include "bsp_sr501.h"
 
 /**
  * @brief  配置嵌套向量中断控制器NVIC
@@ -26,8 +19,8 @@ static void NVIC_Configuration(void)
 {
     NVIC_InitTypeDef NVIC_InitStructure;
 
-    /* 配置NVIC为优先级组1 */
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+    /* 配置NVIC为优先级组2 */
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 
     /* 配置中断源：按键1 */
     NVIC_InitStructure.NVIC_IRQChannel = SR501_INT_EXTI_IRQ;
