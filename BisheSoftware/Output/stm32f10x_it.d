@@ -17,3 +17,5 @@
 ..\..\output\stm32f10x_it.o: ..\..\User\./usart/bsp_usart.h
 ..\..\output\stm32f10x_it.o: D:\Embedded\MDK\Core\ARM\ARMCC\Bin\..\include\stdio.h
 ..\..\output\stm32f10x_it.o: ..\..\User\./gsm_gprs/bsp_gsm_usart.h
+..\..\output\stm32f10x_it.o: ..\..\User\led\bsp_led.h
+..\..\output\stm32f10x_it.o: ..\..\User\sr501\bsp_exti.h

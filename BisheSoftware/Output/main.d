@@ -24,3 +24,5 @@
 ..\..\output\main.o: ..\..\User\sdcard\bsp_sdfs_app.h
 ..\..\output\main.o: ..\..\User\ff9\diskio.h
 ..\..\output\main.o: D:\Embedded\MDK\Core\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\main.o: ..\..\User\./led/bsp_led.h
+..\..\output\main.o: ..\..\User\./sr501/bsp_exti.h

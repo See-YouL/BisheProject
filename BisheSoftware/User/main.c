@@ -12,6 +12,7 @@
  ******************************************************************************
  */
 #include "stm32f10x.h"
+#include "stm32f10x_conf.h"
 #include "./usart/bsp_usart.h"
 #include "./gsm_gprs/bsp_gsm_usart.h"
 #include "./systick/bsp_SysTick.h"
@@ -19,6 +20,8 @@
 #include "./key/bsp_key.h"
 #include "bsp_sdfs_app.h"
 #include <string.h>
+#include "./led/bsp_led.h"
+#include "./sr501/bsp_exti.h"
 
 /* 修改接收短信的手机号码 */
 const char num[]     = "15694266242"; // LSY
@@ -42,10 +45,15 @@ int main(void)
     Key_GPIO_Config();
     /* 系统定时器初始化 */
     SysTick_Init();
+    /* LED初始化 */
+    LED_GPIO_Config();
+    /* 初始化EXTI中断，按感应到人体热源会触发中断*/
+	EXTI_SR501_Config();
 
     /* 程序测试 */
     printf("程序测试开始 \n");
 
+#if 0
     /* 测试模块响应是否正常 */
     while (gsm_init() != GSM_TRUE) {
         printf("GSM模块响应测试不正常 \n");
@@ -100,7 +108,9 @@ int main(void)
     }
     /* 清除接收缓冲区 */
     GSM_CLEAN_RX();
+#endif
 
+#if 0
     /* 短信测试 */
     printf("初始化完成，5秒后开始发送短信测试...  \n");
     /* 延时5秒再发送命令到模块 */
@@ -125,8 +135,13 @@ int main(void)
 		printf("短信发送失败，请确认目标号码有效 \n");
 		while(1);
 	}		
+#endif
 
     while (1) {
+#if 0
+        /**
+         * 接收电话 
+         */
         if (timecount >= 100)
         {
             /* 有来电电话 */
@@ -152,12 +167,13 @@ int main(void)
         timecount++;
         /* 短延时 */
         GSM_DELAY(10);
-        
-        /* 等待接收短信 */
+#endif
+
+#if 0
         /**
-         * 该延时可以通过测试进行删除 
-         * 将拨号和短信置于同一延时下
+         * 接收短信
          */
+        /* 该延时可以通过测试后进行删除*/
         GSM_DELAY(1000);
         newmessadd = IsReceiveMS();
         if (newmessadd)
@@ -176,5 +192,21 @@ int main(void)
                 printf("%s \n", gbkstr);
             }
         }
+#endif
+
+#if 1
+        /**
+         * 人体检测
+         * 在主函数中清除LED(熄灭LED)
+         * 在EXTI中断中点亮LED
+         */
+        if( GPIO_ReadInputDataBit(SR501_INT_GPIO_PORT,SR501_INT_GPIO_PIN)  == 0 )
+		{			
+            /* 清除LED */
+			GPIO_SetBits(LED1_GPIO_PORT, LED1_GPIO_PIN);
+		}
+        GSM_DELAY(1000);
+#endif
+	
     }
 }

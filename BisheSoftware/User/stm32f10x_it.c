@@ -23,10 +23,13 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h"
+#include "stm32f10x_conf.h"
 #include "bsp_sdio_sdcard.h"
 #include "./usart/bsp_usart.h"
 #include "./gsm_gprs/bsp_gsm_usart.h"
 #include <stdio.h>
+#include "bsp_led.h"
+#include "bsp_exti.h"
 
 
 /** @addtogroup STM32F10x_StdPeriph_Template
@@ -196,6 +199,18 @@ void SDIO_IRQHandler(void)
 {
     /* Process All SDIO Interrupt Sources */
     SD_ProcessIRQSrc();
+}
+
+void SR501_IRQHandler(void)
+{
+  //确保是否产生了EXTI Line中断
+	if(EXTI_GetITStatus(SR501_INT_EXTI_LINE) != RESET) 
+	{
+        /* 点亮LED */
+		GPIO_ResetBits(LED1_GPIO_PORT, LED1_GPIO_PIN);
+    //清除中断标志位
+		EXTI_ClearITPendingBit(SR501_INT_EXTI_LINE);     
+	}  
 }
 
 
