@@ -35,7 +35,7 @@ int main(void)
 {
 /*-Variable Initialization----------------------------------------------------*/
     static uint8_t timecount = 0;
-    // char num[20]             = {0};
+    // char num[20]             = {0}; // 修改num变量避免与全局变量冲突
     uint8_t newmessadd = 0, IsRead = 0;
     uint8_t testCard = 0;
 
