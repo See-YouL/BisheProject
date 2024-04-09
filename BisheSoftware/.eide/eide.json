@@ -352,7 +352,8 @@
           "User/mq",
           "User/usart",
           "User/gsm_gprs",
-          "User/SysTick"
+          "User/SysTick",
+          "User/Key"
         ],
         "libList": [],
         "sourceDirList": [],

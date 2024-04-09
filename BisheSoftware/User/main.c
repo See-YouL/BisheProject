@@ -1,190 +1,179 @@
 /**
  * @file main.c
  * @author Eric(jff517680@gmail.com)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 2024-04-08
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 /*-INCLUDES------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include "stm32f10x_conf.h"
-#include "./usart/bsp_usart.h"
-#include "./gsm_gprs/bsp_gsm_usart.h"
-#include "./systick/bsp_SysTick.h"
-#include "./gsm_gprs/bsp_gsm_gprs.h"
-#include "./key/bsp_key.h"
+#include "bsp_usart.h"
+#include "bsp_gsm_usart.h"
+#include "bsp_SysTick.h"
+#include "bsp_gsm_gprs.h"
+#include "bsp_key.h"
 #include "bsp_sdfs_app.h"
 #include <string.h>
-#include "./led/bsp_led.h"
+#include "bsp_led.h"
 #include "bsp_sr501.h"
 #include "bsp_sound.h"
 #include "bsp_mq.h"
 
-/* 修改接收短信的手机号码 */
-const char num[]     = "15694266242"; // LSY
-// const char num[]     = "10086"; // LSY
+const char num[]     = "15694266242"; // LSY Phone Number
 char namenum[20 * 4] = {0}, str[512] = {0}, gbkstr[256] = {0}, namegbk[256] = {0};
 char testbuff[100];
 uint8_t len;
 char *rebuff;
 
-/*-MAIN----------------------------------------------------------------------*/
+/*-MAIN-----------------------------------------------------------------------*/
 int main(void)
 {
+/*-Variable Initialization----------------------------------------------------*/
     static uint8_t timecount = 0;
-    char num[20]             = {0};
+    // char num[20]             = {0};
     uint8_t newmessadd = 0, IsRead = 0;
     uint8_t testCard = 0;
 
+/*-Peripherals Initialization-------------------------------------------------*/
+    USART_Config(); // DEBUG USART1 Init
+    GSM_USART_Config(); // GSM USART2 Init
+    Key_GPIO_Config(); // Key GPIO Init
+    SysTick_Init(); // Systick Init
+    LED_GPIO_Config(); // LED GPIO Init
+    EXTI_SR501_Config(); // SR501 EXTI Init
+    Sound_GPIO_Config(); // Sound GPIO Init
+    MQ2_Config(); // MQ-2 EXTI Init
 
-    /* DEBUG USART1 初始化 */
-    USART_Config();
-    /* GSM USART2 初始化 */
-    GSM_USART_Config();
-    /* 按键初始化 */
-    Key_GPIO_Config();
-    /* 系统定时器初始化 */
-    SysTick_Init();
-    /* LED初始化 */
-    LED_GPIO_Config();
-    /* 初始化EXTI中断，按感应到人体热源会触发中断*/
-	EXTI_SR501_Config();
-    /* 蜂鸣器初始化 */
-    Sound_GPIO_Config();
-    /* MQ-2初始化*/
-    MQ2_Config();
+/*--------------------Test Begin----------------------------------------------*/
+    printf("Test Begin \n");
 
-    /* 程序测试 */
-    printf("程序测试开始 \n");
-
+/*--------------------GSM module Initialization-------------------------------*/
 #if 1
-    /* 测试模块响应是否正常 */
+    // Check GSM respond
     while (gsm_init() != GSM_TRUE) {
-        printf("GSM模块响应测试不正常 \n");
-        printf("请检查GSM模块的链接或电源开关 \n");
+        printf("ERROR: GSM module not initialized \n")
+        printf("The GSM module response test is not working properly \n");
+        printf("Please check whether the module is connected or whether the power switch is turned on \n");
         GSM_DELAY(500);
     }
-    printf("通过了GSM模块响应测试, 5s后开始进行测试 \n");
-    GSM_DELAY(5000); 
+    printf("Passed the GSM module response test, and the Phone-Call test started after 5 seconds \n");
+    GSM_DELAY(5000);
 
-	//先执行次设置文本模式
-	if(gsm_cmd("AT+CMGF=1\r","OK", 100) != GSM_TRUE)
-	{
-		printf("设置文本模式错误 \n");
-	}
-	GSM_DELAY(1000); 	
+    // Set the text mode
+    if (gsm_cmd("AT+CMGF=1\r", "OK", 100) != GSM_TRUE) {
+        printf("ERROR: Text mode setting \n")
+    }
+    GSM_DELAY(1000);
 
-    printf("正在等待GSM模块初始化... \n");
-	while(IsInsertCard() != GSM_TRUE)
-	{
-		
-		if(++testCard >20)
-		{
-			printf("检测不到电话卡，请断电并重新接入电话卡 \n");
-		}
-		GSM_DELAY(1000); 		
-	}		
+    printf("Waiting for GSM module initializationa \n");
+    while (IsInsertCard() != GSM_TRUE) {
+        if (++testCard > 20) {
+            printf("ERROR: Phone card not detcted \n");
+            printf("If the phone card is not detected, please power off and reconnect the phone card \n");
+        }
+        GSM_DELAY(1000);
+    }
 #endif
 
 #if 0
-    /* 拨号测试 */
-    printf("初始化完成，5秒后开始拨号测试...  \n");
-    /* 延时五秒 */
+    /* 鎷ㄥ彿娴嬭瘯 */
+    printf("鍒濆�嬪寲瀹屾垚锛�5绉掑悗寮€濮嬫嫧鍙锋祴璇�...  \n");
+    /* 寤舵椂浜旂�� */
     GSM_DELAY(5000);
-    /* 拨打电话 */
-    gsm_call("15694266242"); // 拨打lsy电话测试
+    /* 鎷ㄦ墦鐢佃瘽 */
+    gsm_call("15694266242"); // 鎷ㄦ墦lsy鐢佃瘽娴嬭瘯
     rebuff = gsm_waitask(0);
-    /* 响应OK, 表示GSM模块正常接收到命令 */
+    /* 鍝嶅簲OK, 琛ㄧずGSM妯″潡姝ｅ父鎺ユ敹鍒板懡浠� */
     if (strstr(rebuff, "ATD") != NULL) 
     {
-        printf("正在呼叫 \n");
-        /* 清除接收缓冲区 */
+        printf("姝ｅ湪鍛煎彨 \n");
+        /* 娓呴櫎鎺ユ敹缂撳啿鍖� */
         GSM_CLEAN_RX();          
-        /* 重新等待消息 */
+        /* 閲嶆柊绛夊緟娑堟伅 */
         rebuff = gsm_waitask(0); 
-        /* 响应NO CARRIER, 通话结束 */
+        /* 鍝嶅簲NO CARRIER, 閫氳瘽缁撴潫 */
         if (strstr(rebuff, "NO CARRIER") != NULL)
         {
-            printf("通话结束 \n");
+            printf("閫氳瘽缁撴潫 \n");
         } 
-        /* 响应NO ANSWER, 无人接听 */
+        /* 鍝嶅簲NO ANSWER, 鏃犱汉鎺ュ惉 */
         else if (strstr(rebuff, "NO ANSWER") != NULL)
         {
-            printf("您拨打的电话暂时无人接听, 请稍后再拨 \n");
+            printf("鎮ㄦ嫧鎵撶殑鐢佃瘽鏆傛椂鏃犱汉鎺ュ惉, 璇风◢鍚庡啀鎷� \n");
         }
     }
-    /* 清除接收缓冲区 */
+    /* 娓呴櫎鎺ユ敹缂撳啿鍖� */
     GSM_CLEAN_RX();
 #endif
 
 #if 1
-    /* 短信测试 */
-    printf("初始化完成，5秒后开始发送短信测试...  \n");
-    /* 延时5秒再发送命令到模块 */
-    GSM_DELAY(5000);    
-    /* 发送英文短信 */
-	if(gsm_sms((char *)num,"GSM Test") == GSM_TRUE)
-    {
-		printf("英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码 \n",num);
+    /* 鐭�淇℃祴璇� */
+    printf("鍒濆�嬪寲瀹屾垚锛�5绉掑悗寮€濮嬪彂閫佺煭淇℃祴璇�...  \n");
+    /* 寤舵椂5绉掑啀鍙戦€佸懡浠ゅ埌妯″潡 */
+    GSM_DELAY(5000);
+
+    // 鍙戦€佽嫳鏂囩煭淇�
+
+    if (gsm_sms((char *)num, "Test 02") == GSM_TRUE) {
+        printf(": %s \n", num);
+    } else {
+        printf("鐭�淇″彂閫佸け璐ワ紝璇风‘璁ょ洰鏍囧彿鐮佹湁鏁� \n");
     }
-	else
-	{
-		printf("短信发送失败，请确认目标号码有效 \n");
-	}
-    GSM_DELAY(2000);    
-	/* 中英文短信，实际测试时请把电话号码修改成要接收短信的手机号 */
-	if(gsm_sms((char *)num,"GSM模块短信测试") == GSM_TRUE)
-    {
-		printf("中英文短信已发送至：%s，为方便测试，请在程序中修改接收短信的手机号码 \n",num);
+    GSM_DELAY(2000);
+
+    // 涓�鑻辨枃鐭�淇★紝瀹為檯娴嬭瘯鏃惰�锋妸鐢佃瘽鍙风爜淇�鏀规垚瑕佹帴鏀剁煭淇＄殑鎵嬫満鍙�
+    if (gsm_sms((char *)num, "短信测试 01") == GSM_TRUE) {
+        printf("已发送至: %s \n", num);
+    } else {
+        printf("鐭�淇″彂閫佸け璐ワ紝璇风‘璁ょ洰鏍囧彿鐮佹湁鏁� \n");
+        while (1)
+            ;
     }
-	else
-	{
-		printf("短信发送失败，请确认目标号码有效 \n");
-		while(1);
-	}		
+
 #endif
 
     while (1) {
 #if 0
         /**
-         * 接收电话 
+         * 鎺ユ敹鐢佃瘽 
          */
         if (timecount >= 100)
         {
-            /* 有来电电话 */
+            /* 鏈夋潵鐢电數璇� */
             if (IsRing(num) == GSM_TRUE)
             {
                 printf("Ringing: From:%s \n", num);
-                printf("请按下KEY2接听或者按下KEY1挂断 \n");
+                printf("璇锋寜涓婯EY2鎺ュ惉鎴栬€呮寜涓婯EY1鎸傛柇 \n");
             }
-            /* 重置计数因子 */
+            /* 閲嶇疆璁℃暟鍥犲瓙 */
             timecount = 0;
         }
-        /* 按下KEY2接听 */
+        /* 鎸変笅KEY2鎺ュ惉 */
         if (Key_Scan(KEY2_GPIO_PORT, KEY2_GPIO_PIN) == KEY_ON) 
         {
             GSM_HANGON();
         }
-        /* 按下KEY1挂断 */
+        /* 鎸変笅KEY1鎸傛柇 */
         if (Key_Scan(KEY1_GPIO_PORT, KEY1_GPIO_PIN) == KEY_ON) 
         {
             GSM_HANGOFF();
         }
-        /* 计时因子递增 */
+        /* 璁℃椂鍥犲瓙閫掑�� */
         timecount++;
-        /* 短延时 */
+        /* 鐭�寤舵椂 */
         GSM_DELAY(10);
 #endif
 
 #if 0
         /**
-         * 接收短信
+         * 鎺ユ敹鐭�淇�
          */
-        /* 该延时可以通过测试后进行删除*/
+        /* 璇ュ欢鏃跺彲浠ラ€氳繃娴嬭瘯鍚庤繘琛屽垹闄�*/
         GSM_DELAY(1000);
         newmessadd = IsReceiveMS();
         if (newmessadd)
@@ -194,12 +183,12 @@ int main(void)
             //			printf("newmessadd=%d,IsRead:%d \n",newmessadd,IsRead);
             if (IsRead)
             {
-                printf("新短信 \n");
+                printf("鏂扮煭淇� \n");
 
                 hexuni2gbk(namenum, namegbk);
                 hexuni2gbk(str, gbkstr);
-                printf("发件人: %s \n", namegbk);
-                printf("内容: \n");
+                printf("鍙戜欢浜�: %s \n", namegbk);
+                printf("鍐呭��: \n");
                 printf("%s \n", gbkstr);
             }
         }
@@ -207,14 +196,14 @@ int main(void)
 
 #if 0
         /**
-         * 人体检测
-         * 在主函数中清除LED(熄灭LED)
-         * 在EXTI中断中点亮LED
+         * 浜轰綋妫€娴�
+         * 鍦ㄤ富鍑芥暟涓�娓呴櫎LED(鐔勭伃LED)
+         * 鍦‥XTI涓�鏂�涓�鐐逛寒LED
          */
         if(0 == GPIO_ReadInputDataBit(SR501_INT_GPIO_PORT,SR501_INT_GPIO_PIN))
 		{			
             Sound_Controller(Sound_Close);
-            /* 清除LED */
+            /* 娓呴櫎LED */
 			GPIO_SetBits(LED1_GPIO_PORT, LED1_GPIO_PIN);
 		}
 
@@ -223,19 +212,19 @@ int main(void)
 
 #if 0
     /**
-     * 有害气体检测 
-     * 主函数中关闭蜂鸣器
-     * 中断中打开蜂鸣器
+     * 鏈夊�虫皵浣撴�€娴� 
+     * 涓诲嚱鏁颁腑鍏抽棴铚傞福鍣�
+     * 涓�鏂�涓�鎵撳紑铚傞福鍣�
      */
     if(MQ2_Normal == MQ2_Read())
     {
-        // DEBUG 清除烟雾报警
+        // DEBUG 娓呴櫎鐑熼浘鎶ヨ��
         printf("Delete MQ2-Warn \n");
-        // 关闭蜂鸣器
+        // 鍏抽棴铚傞福鍣�
         Sound_Controller(Sound_Close);
     }
     GSM_DELAY(1000);
-	
+
 #endif
     }
 }
