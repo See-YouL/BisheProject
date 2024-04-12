@@ -35,6 +35,7 @@
 #define MQ2_DEBUG_ENABLE 1
 #define MQ2_DEBUG_DISABLE 0
 
+/*-Global Variable -----------------------------------------------------------*/
 const char num[]     = "15694266242"; // LSY Phone Number
 char namenum[20 * 4] = {0}, str[512] = {0},
                   gbkstr[256] = {0}, namegbk[256] = {0};
