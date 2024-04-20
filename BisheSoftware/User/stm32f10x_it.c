@@ -31,7 +31,7 @@
 #include "bsp_led.h"
 #include "bsp_sr501.h"
 #include "bsp_sound.h"
-#include "bsp_mq.h"
+// #include "bsp_mq.h"
 #include <stdio.h>
 
 /** @addtogroup STM32F10x_StdPeriph_Template

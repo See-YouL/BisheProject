@@ -1,3 +1,23 @@
+/**
+ * @file bsp_gsm_usart.h
+ * @author Eric(jff517680@gmail.com)
+ * @brief GSM模块定义
+ * @version 0.1
+ * @date 2024-04-19
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+/**
+ * @brief 引脚情况
+ * 
+ * 1. VCC -> 外部供电
+ * 2. GND -> GND
+ * 3. SRX -> PA2
+ * 4. STX -> PA3
+ */
+
 #ifndef __BSP_GSM_USART_H
 #define	__BSP_GSM_USART_H
 

@@ -1,0 +1,17 @@
+Removed Pin From Net: NetName=GND Pin=U3-1
+Removed Pin From Net: NetName=5V Pin=U3-5
+Removed Pin From Net: NetName=5V Pin=U3-5
+Removed Pin From Net: NetName=5V Pin=U3-5
+Removed Pin From Net: NetName=5V Pin=U3-5
+Removed Pin From Net: NetName=5V Pin=U3-5
+Change Component Designator: OldDesignator= NewDesignator=P2
+Change Component Designator: OldDesignator=RESET NewDesignator=SW1
+Change Component Library : Designator=U3 Old Library=STM32F103C8T6.SCHLIB New Library=PCB_Project_4.SCHLIB
+Added Pin To Net: NetName=5V Pin=U3-1
+Added Pin To Net: NetName=GND Pin=U3-5
+Added Pin To Net: NetName=GND Pin=U3-5
+Added Pin To Net: NetName=GND Pin=U3-5
+Added Pin To Net: NetName=GND Pin=U3-5
+Added Pin To Net: NetName=GND Pin=U3-5
+Added Member To Class: ClassName=Sheet1 Member=Component P2 SWD
+Added Room: Name=Sheet1

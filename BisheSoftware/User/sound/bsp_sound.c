@@ -23,13 +23,13 @@ void Sound_GPIO_Config(void)
     // 使能GPIOA时钟
     RCC_APB2PeriphClockCmd(SOUND_GPIO_CLK, ENABLE);
 
-    // 配置PA3为推挽输出模式，并初始化为高电平
+    // 配置PA1为推挽输出模式，并初始化为高电平
     GPIO_InitStructure.GPIO_Pin = SOUND_GPIO_PIN;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 推挽输出模式
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(SOUND_GPIO_PORT, &GPIO_InitStructure);
 
-    // 将PA3引脚初始化为高电平状态
+    // 将PA1引脚初始化为高电平状态
     GPIO_SetBits(SOUND_GPIO_PORT, SOUND_GPIO_PIN);
 }
 

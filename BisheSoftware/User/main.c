@@ -9,31 +9,54 @@
  *
  */
 
+/**
+ * @brief PIN
+ * 
+ * PA1 -> Sound_GND
+ * PA2 -> SIM800A_SRX
+ * PA3 -> SIM800A_STX
+ * PA4 -> OLED_CS
+ * PA5 -> OLED_SCK
+ * PA7 -> OLED_SDA
+ * PA8 -> SR501_OUT
+ * 
+ * PB0 -> OLED_RES
+ * PB1 -> OLED_PB1
+ * PB8 -> ESP8266_EN
+ * PB9 -> ESP8266_RST
+ * PB10 -> ESP8266_RX
+ * PB11 -> ESP8266_TX
+ * 
+ */
+
 /*-INCLUDES------------------------------------------------------------------*/
+#include <string.h>
 #include "stm32f10x.h"
 #include "stm32f10x_conf.h"
-#include "bsp_usart.h"
-#include "bsp_gsm_usart.h"
-#include "bsp_SysTick.h"
-#include "bsp_gsm_gprs.h"
-#include "bsp_key.h"
-#include "bsp_sdfs_app.h"
-#include <string.h>
-#include "bsp_led.h"
-#include "bsp_sr501.h"
-#include "bsp_sound.h"
-#include "bsp_mq.h"
+#include "bsp_usart.h" // DEBUG 
+#include "bsp_gsm_usart.h" // GSM
+#include "bsp_SysTick.h" // Delay
+#include "bsp_gsm_gprs.h" // GSM
+// #include "bsp_key.h" // Key
+#include "bsp_sdfs_app.h" // GSM
+#include "bsp_led.h" // Led
+#include "bsp_sr501.h" // Sr501
+#include "bsp_sound.h" // Sound
+// #include "bsp_mq.h" // Mq2// 需要换口PA4占用
+#include "bsp_oled.h" // Oled
 
-#define GSM_INIT_DEBUG_ENABLE    1
+#define GSM_INIT_DEBUG_ENABLE  1
 #define GSM_INIT_DEBUG_DISABLE 0
-#define DIALUP_DEBUG_ENABLE      1
-#define DIALUP_DEBUG_DISABLE     0
-#define MESSEAGE_DEBUG_ENABLE    1
-#define MESSEAGE_DEBUG_DISABLE   0
-#define HR501_DEBUG_ENABLE    1
-#define HR501_DEBUG_DISABLE   0
-#define MQ2_DEBUG_ENABLE 1
-#define MQ2_DEBUG_DISABLE 0
+#define DIALUP_DEBUG_ENABLE    1
+#define DIALUP_DEBUG_DISABLE   0
+#define MESSEAGE_DEBUG_ENABLE  1
+#define MESSEAGE_DEBUG_DISABLE 0
+#define HR501_DEBUG_ENABLE     1
+#define HR501_DEBUG_DISABLE    0
+#define MQ2_DEBUG_ENABLE       1
+#define MQ2_DEBUG_DISABLE      0
+#define OLED_DEBUG_ENABLE       1
+#define OLED_DEBUG_DISABLE      0
 
 /*-Global Variable -----------------------------------------------------------*/
 const char num[]     = "15694266242"; // LSY Phone Number
@@ -60,17 +83,27 @@ int main(void)
     LED_GPIO_Config();   // LED GPIO Init
     EXTI_SR501_Config(); // SR501 EXTI Init
     Sound_GPIO_Config(); // Sound GPIO Init
-    MQ2_Config();        // MQ-2 EXTI Init
+    //MQ2_Config();        // MQ-2 EXTI Init
 
     /*-Test Begin-------------------------------------------------------------*/
-    printf("Test Begin \n");
+    // printf("Test Begin \n");
 
-#if GSM_INIT_DEBUG_ENABLE
+#if 1 // oled测试
+    u8 t;
+    OLED_Init();         // OLED Init
+    OLED_ColorTurn(0);   // 0 normal display, 1 inverted color display
+    OLED_DisplayTurn(0); // 0 normal display 1 screen flip display
+    OLED_Refresh();      // OLED refresh
+    t = ' ';
+
+#endif
+
+#if GSM_INIT_DEBUG_DISABLE
     /*-GSM Module Initialization----------------------------------------------*/
     // Check GSM respond
     while (gsm_init() != GSM_TRUE) {
-        printf("ERROR: GSM module not initialized \n")
-            printf("The GSM module response test is not working properly \n");
+        printf("ERROR: GSM module not initialized \n");
+        printf("The GSM module response test is not working properly \n");
         printf("Please check whether the module is connected or whether the power switch is turned on \n");
         GSM_DELAY(500);
     }
@@ -79,7 +112,7 @@ int main(void)
 
     // Set the text mode
     if (gsm_cmd("AT+CMGF=1\r", "OK", 100) != GSM_TRUE) {
-        printf("ERROR: Text mode setting \n")
+        printf("ERROR: Text mode setting \n");
     }
     GSM_DELAY(1000);
 
@@ -133,7 +166,7 @@ int main(void)
 #if HR501_DEBUG_DISABLE
         /*-Human detection----------------------------------------------------*/
         if (0 == GPIO_ReadInputDataBit(SR501_INT_GPIO_PORT, SR501_INT_GPIO_PIN)) {
-            Sound_Controller(Sound_Close); // Close sound
+            Sound_Controller(Sound_Close);               // Close sound
             GPIO_SetBits(LED1_GPIO_PORT, LED1_GPIO_PIN); // Turn off LED
             printf("Clear the state of HR501 Warn \n");
         }
@@ -141,15 +174,47 @@ int main(void)
 #endif
 
 #if MQ2_DEBUG_DISABLE
-    /*-Smoke alarms-----------------------------------------------------------*/
-    if(MQ2_Normal == MQ2_Read())
-    {
-        printf("Delete MQ2-Warn \n");
-        Sound_Controller(Sound_Close); // Close Sound
-        printf("Clear the state of MQ2 Warn \n");
-    }
-    GSM_DELAY(1000);
+        /*-Smoke alarms-----------------------------------------------------------*/
+        if (MQ2_Normal == MQ2_Read()) {
+            printf("Delete MQ2-Warn \n");
+            Sound_Controller(Sound_Close); // Close Sound
+            printf("Clear the state of MQ2 Warn \n");
+        }
+        GSM_DELAY(1000);
 #endif
 
+#if OLED_DEBUG_ENABLE         
+        /*-OLED---------------------------------------------------------------*/
+        GSM_DELAY(500);
+        float a = 0.333;
+        //在指定位置显示一个字符,包括部分字符
+        OLED_ShowChar(8, 16, a, 16);
+        // OLED_Clear();
+        // OLED_ShowString(8, 16, "ZHONGJINGYUAN", 16);
+        // OLED_ShowString(20, 32, "2014/05/01", 16);
+        // OLED_ShowString(0, 48, "ASCII:", 16);
+        // OLED_ShowString(63, 48, "CODE:", 16);
+        // OLED_ShowChar(48, 48, t, 16); // 显示ASCII字符
+        // t++;
+        // if (t > '~') t = ' ';
+        // OLED_ShowNum(103, 48, t, 3, 16);
+        // OLED_Refresh();
+        // GSM_DELAY(500);
+        // OLED_Clear();
+        // OLED_ShowChinese(0, 0, 0, 16);   // 16*16 中
+        // OLED_ShowChinese(16, 0, 0, 24);  // 24*24 中
+        // OLED_ShowChinese(24, 20, 0, 32); // 32*32 中
+        // OLED_ShowChinese(64, 0, 0, 64);  // 64*64 中
+        // OLED_Refresh();
+        // GSM_DELAY(500);
+        // OLED_Clear();
+        // OLED_ShowString(0, 0, "ABC", 12);  // 6*12 “ABC”
+        // OLED_ShowString(0, 12, "ABC", 16); // 8*16 “ABC”
+        // OLED_ShowString(0, 28, "ABC", 24); // 12*24 “ABC”
+        // OLED_Refresh();
+        // GSM_DELAY(500);
+        // OLED_ScrollDisplay(11, 4);
+
+#endif
     }
 }

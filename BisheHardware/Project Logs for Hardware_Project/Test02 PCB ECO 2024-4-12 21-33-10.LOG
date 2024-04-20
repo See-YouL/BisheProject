@@ -1,0 +1,6 @@
+Added Component: Designator=D1(LED)
+Added Net: Name=GND
+Added Pin To Net: NetName=VCC3V3 Pin=D1-1
+Added Net: Name=VCC3V3
+Added Class: Name=STM32F103C8T6
+Added Room: Name=STM32F103C8T6

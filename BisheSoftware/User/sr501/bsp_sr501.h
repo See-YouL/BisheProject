@@ -8,6 +8,14 @@
  * @copyright Copyright (c) 2024
  * 
  */
+
+/**
+ * @brief 引脚情况
+ * 
+ * 1. VCC -> 5V
+ * 2. GND -> GND
+ * 3. OUT -> PA8
+ */
 #ifndef __BSP_SR501_H
 #define	__BSP_SR501_H
 

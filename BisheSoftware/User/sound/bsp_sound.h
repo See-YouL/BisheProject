@@ -9,6 +9,12 @@
  * 
  */
 
+/**
+ * @brief 引脚情况
+ * 
+ * 1. VCC -> 5V
+ * 2. GND -> PA1
+ */
 #ifndef __BSP_SOUND_H
 #define __BSP_SOUND_H
 
@@ -16,7 +22,7 @@
 
 #define SOUND_GPIO_PORT GPIOA
 #define SOUND_GPIO_CLK RCC_APB2Periph_GPIOA
-#define SOUND_GPIO_PIN GPIO_Pin_5
+#define SOUND_GPIO_PIN GPIO_Pin_1
 
 typedef enum {
     Sound_Open = 0,

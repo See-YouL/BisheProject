@@ -1,0 +1,4 @@
+-c --cpu Cortex-M3 -D__MICROLIB -g -O1 --apcs=interwork --split_sections -I ..\..\Libraries\CMSIS -I ..\..\User -I ..\..\Libraries\FWlib\inc -I ..\..\User\sdcard -I ..\..\User\ff9 -I ..\..\User\led -I ..\..\User\sr501 -I ..\..\User\usart -I ..\..\User\gsm_gprs -I ..\..\User\SysTick -I ..\..\User\oled -I ..\..\User\sound
+-ID:\Embedded\MDK\Pack\Keil\STM32F1xx_DFP\2.4.1\Device\Include
+-D__UVISION_VERSION="538" -DSTM32F10X_HD -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER
+-o ..\..\output\stm32f10x_it.o --omf_browse ..\..\output\stm32f10x_it.crf --depend ..\..\output\stm32f10x_it.d "..\..\User\stm32f10x_it.c"

@@ -156,6 +156,9 @@
             "path": "User/mq/bsp_mq.c"
           },
           {
+            "path": "User/oled/bsp_oled.c"
+          },
+          {
             "path": "User/sdcard/bsp_sdfs_app.c"
           },
           {
@@ -353,7 +356,8 @@
           "User/usart",
           "User/gsm_gprs",
           "User/SysTick",
-          "User/Key"
+          "User/Key",
+          "User/oled"
         ],
         "libList": [],
         "sourceDirList": [],

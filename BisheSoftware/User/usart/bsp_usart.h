@@ -1,3 +1,20 @@
+/**
+ * @file bsp_usart.h
+ * @author Eric(jff517680@gmail.com)
+ * @brief DEBUG调试串口定义
+ * @version 0.1
+ * @date 2024-04-19
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+/**
+ * @brief 引脚情况
+ * 
+ * PA9
+ * PA10
+ */
 #ifndef __BSP_USART_H
 #define	__BSP_USART_H
 

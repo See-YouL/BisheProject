@@ -1,3 +1,23 @@
+/**
+ * @file bsp_gsm_gprs.h
+ * @author Eirc(jff517680@gmail.com)
+ * @brief GSM定义
+ * @version 0.1
+ * @date 2024-04-19
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+/**
+ * @brief 引脚情况
+ * 
+ * 1. VCC -> 外部供电
+ * 2. GND -> GND
+ * 3. SRX -> PA2
+ * 4. STX -> PA3
+ */
+
 #ifndef __BSP_GSM_GPRS_H
 #define __BSP_GSM_GPRS_H
 

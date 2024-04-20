@@ -1,3 +1,20 @@
+/**
+ * @file bsp_key.h
+ * @author Eric(jff517680@gmail.com)
+ * @brief 按键定义
+ * @version 0.1
+ * @date 2024-04-19
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
+/**
+ * @brief 引脚说明
+ * 
+ * PA0 -> KEY1
+ * PC13 -> KEY2
+ */
 #ifndef __KEY_H
 #define	__KEY_H
 

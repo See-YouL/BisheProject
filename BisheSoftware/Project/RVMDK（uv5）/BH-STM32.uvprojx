@@ -340,7 +340,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\sdcard;..\..\User\ff9;..\..\User\led;..\..\User\sr501</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\sdcard;..\..\User\ff9;..\..\User\led;..\..\User\sr501;..\..\User\usart;..\..\User\gsm_gprs;..\..\User\SysTick;..\..\User\oled;..\..\User\sound;..\..\User\mq;..\..\User\Key;..\..\User\sdcard</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -610,14 +610,24 @@
               <FilePath>..\..\User\led\bsp_led.h</FilePath>
             </File>
             <File>
-              <FileName>bsp_exti.c</FileName>
+              <FileName>bsp_mq.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\sr501\bsp_exti.c</FilePath>
+              <FilePath>..\..\User\mq\bsp_mq.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_exti.h</FileName>
+              <FileName>bsp_mq.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\sr501\bsp_exti.h</FilePath>
+              <FilePath>..\..\User\mq\bsp_mq.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_sdfs_app.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\sdcard\bsp_sdfs_app.h</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_sdio_sdcard.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\sdcard\bsp_sdio_sdcard.h</FilePath>
             </File>
           </Files>
         </Group>
