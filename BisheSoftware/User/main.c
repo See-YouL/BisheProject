@@ -11,7 +11,7 @@
 
 /**
  * @brief PIN
- * 
+ *
  * PA1 -> Sound_GND
  * PA2 -> SIM800A_SRX
  * PA3 -> SIM800A_STX
@@ -19,31 +19,32 @@
  * PA5 -> OLED_SCK
  * PA7 -> OLED_SDA
  * PA8 -> SR501_OUT
- * 
+ *
  * PB0 -> OLED_RES
  * PB1 -> OLED_PB1
  * PB8 -> ESP8266_EN
  * PB9 -> ESP8266_RST
  * PB10 -> ESP8266_RX
  * PB11 -> ESP8266_TX
- * 
+ *
  */
 
 /*-INCLUDES------------------------------------------------------------------*/
 #include <string.h>
 #include "stm32f10x.h"
 #include "stm32f10x_conf.h"
-#include "bsp_usart.h" // DEBUG 
+#include "bsp_usart.h"     // DEBUG
 #include "bsp_gsm_usart.h" // GSM
-#include "bsp_SysTick.h" // Delay
-#include "bsp_gsm_gprs.h" // GSM
+#include "bsp_SysTick.h"   // Delay
+#include "bsp_gsm_gprs.h"  // GSM
 // #include "bsp_key.h" // Key
 #include "bsp_sdfs_app.h" // GSM
-#include "bsp_led.h" // Led
+// #include "bsp_led.h" // Led
 #include "bsp_sr501.h" // Sr501
 #include "bsp_sound.h" // Sound
 // #include "bsp_mq.h" // Mq2// 需要换口PA4占用
-#include "bsp_oled.h" // Oled
+#include "bsp_oled.h"    // Oled
+#include "bsp_esp8266.h" // ESP8266
 
 #define GSM_INIT_DEBUG_ENABLE  1
 #define GSM_INIT_DEBUG_DISABLE 0
@@ -55,8 +56,8 @@
 #define HR501_DEBUG_DISABLE    0
 #define MQ2_DEBUG_ENABLE       1
 #define MQ2_DEBUG_DISABLE      0
-#define OLED_DEBUG_ENABLE       1
-#define OLED_DEBUG_DISABLE      0
+#define OLED_DEBUG_ENABLE      1
+#define OLED_DEBUG_DISABLE     0
 
 /*-Global Variable -----------------------------------------------------------*/
 const char num[]     = "15694266242"; // LSY Phone Number
@@ -78,23 +79,19 @@ int main(void)
     /*-Peripherals Initialization---------------------------------------------*/
     USART_Config();      // DEBUG USART1 Init
     GSM_USART_Config();  // GSM USART2 Init
-    Key_GPIO_Config();   // Key GPIO Init
+    // Key_GPIO_Config();   // Key GPIO Init
     SysTick_Init();      // Systick Init
-    LED_GPIO_Config();   // LED GPIO Init
+    // LED_GPIO_Config();   // LED GPIO Init
     EXTI_SR501_Config(); // SR501 EXTI Init
     Sound_GPIO_Config(); // Sound GPIO Init
-    //MQ2_Config();        // MQ-2 EXTI Init
+    // MQ2_Config();        // MQ-2 EXTI Init
+    ESP8266_Init(); // ESP8266 Init
+    OLED_Init();    // OLED Init
 
     /*-Test Begin-------------------------------------------------------------*/
-    // printf("Test Begin \n");
+    printf("Test Begin \n");
 
-#if 1 // oled测试
-    u8 t;
-    OLED_Init();         // OLED Init
-    OLED_ColorTurn(0);   // 0 normal display, 1 inverted color display
-    OLED_DisplayTurn(0); // 0 normal display 1 screen flip display
-    OLED_Refresh();      // OLED refresh
-    t = ' ';
+#if 1
 
 #endif
 
@@ -160,8 +157,15 @@ int main(void)
     GSM_DELAY(2000); // Delay 2s
 #endif
 
-    /*-WHILE BEGIN------------------------------------------------------------*/
-    while (1) {
+/*-WHILE BEGIN----------------------------------------------------------------*/
+while (1) {
+#if 1 
+    /*-ESP8266----------------------------------------------------------------*/
+    if(0 == ESP8266_AT_Test())
+    {
+        printf("111\n");
+    }
+#endif
 
 #if HR501_DEBUG_DISABLE
         /*-Human detection----------------------------------------------------*/
@@ -183,13 +187,23 @@ int main(void)
         GSM_DELAY(1000);
 #endif
 
-#if OLED_DEBUG_ENABLE         
+#if OLED_DEBUG_DISABLE
         /*-OLED---------------------------------------------------------------*/
-        GSM_DELAY(500);
-        float a = 0.333;
-        //在指定位置显示一个字符,包括部分字符
-        OLED_ShowChar(8, 16, a, 16);
+        // u8 t;
+        // OLED_ColorTurn(0);   // 0 normal display, 1 inverted color display
+        // OLED_DisplayTurn(0); // 0 normal display 1 screen flip display
+        // OLED_Refresh();      // OLED refresh
+        // t = ' ';
+        // GSM_DELAY(500);
         // OLED_Clear();
+        // u32 i = 123;
+        // OLED_ShowChar(8, 16, a, 12);
+        // GSM_DELAY(500);
+        // OLED_ShowChar(0, 0, a, 16);
+        // OLED_ShowNum(0, 0, i, 5, 16);
+        // GSM_DELAY(500);
+        // OLED_ShowChar(8, 16, a, 24);
+        // GSM_DELAY(500);
         // OLED_ShowString(8, 16, "ZHONGJINGYUAN", 16);
         // OLED_ShowString(20, 32, "2014/05/01", 16);
         // OLED_ShowString(0, 48, "ASCII:", 16);
@@ -211,10 +225,10 @@ int main(void)
         // OLED_ShowString(0, 0, "ABC", 12);  // 6*12 “ABC”
         // OLED_ShowString(0, 12, "ABC", 16); // 8*16 “ABC”
         // OLED_ShowString(0, 28, "ABC", 24); // 12*24 “ABC”
-        // OLED_Refresh();
+        OLED_Refresh();
         // GSM_DELAY(500);
         // OLED_ScrollDisplay(11, 4);
-
 #endif
+
     }
 }

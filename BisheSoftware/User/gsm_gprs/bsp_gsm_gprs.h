@@ -1,6 +1,6 @@
 /**
  * @file bsp_gsm_gprs.h
- * @author Eirc(jff517680@gmail.com)
+ * @author Eric(jff517680@gmail.com)
  * @brief GSM∂®“Â
  * @version 0.1
  * @date 2024-04-19

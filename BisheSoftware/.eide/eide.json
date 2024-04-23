@@ -138,6 +138,9 @@
         "name": "USER",
         "files": [
           {
+            "path": "User/esp8266/bsp_esp8266.c"
+          },
+          {
             "path": "User/gsm_gprs/bsp_gsm_gprs.c"
           },
           {
@@ -166,9 +169,6 @@
           },
           {
             "path": "User/sound/bsp_sound.c"
-          },
-          {
-            "path": "User/sr501/bsp_exti.c"
           },
           {
             "path": "User/sr501/bsp_sr501.c"
@@ -357,7 +357,8 @@
           "User/gsm_gprs",
           "User/SysTick",
           "User/Key",
-          "User/oled"
+          "User/oled",
+          "User/esp8266"
         ],
         "libList": [],
         "sourceDirList": [],
