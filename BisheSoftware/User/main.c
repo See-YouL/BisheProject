@@ -21,7 +21,11 @@
  * PA8 -> SR501_OUT
  *
  * PB0 -> OLED_RES
- * PB1 -> OLED_PB1
+ * PB1 -> OLED_DC
+ * PB3 -> MQ2_DO // 烟雾
+ * PB4 -> MQ4_DO // 天然气
+ * PB5 -> MQ5_DO // 液化气
+ * PB6 -> MQ9_DO // 可燃气体
  * PB8 -> ESP8266_EN
  * PB9 -> ESP8266_RST
  * PB10 -> ESP8266_RX
@@ -225,7 +229,7 @@ while (1) {
         // OLED_ShowString(0, 0, "ABC", 12);  // 6*12 “ABC”
         // OLED_ShowString(0, 12, "ABC", 16); // 8*16 “ABC”
         // OLED_ShowString(0, 28, "ABC", 24); // 12*24 “ABC”
-        OLED_Refresh();
+        // OLED_Refresh();
         // GSM_DELAY(500);
         // OLED_ScrollDisplay(11, 4);
 #endif
