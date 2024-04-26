@@ -23,6 +23,7 @@
 
 #include "stm32f10x.h"
 #include <stdio.h>
+#include "bsp_gsm_gprs.h"
 
 
 // GSM_GPRS使用的串口
@@ -43,6 +44,9 @@
 #define  GSM_USART_IRQHandler         USART2_IRQHandler
 
 void GSM_USART_Config(void);
+void GSM_Init(void);
+void GSM_Dialup(void);
+void GSM_Messeage(void);
 void bsp_GSM_USART_IRQHandler(void);
 char *get_rebuff(uint8_t *len);
 void clean_rebuff(void);

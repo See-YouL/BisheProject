@@ -78,6 +78,73 @@ void GSM_USART_Config(void)
     USART_Cmd(GSM_USARTx, ENABLE);
 }
 
+/**
+ * @brief GSM初始化测试 
+ * 
+ */
+void GSM_Init(void){
+    uint8_t testCard = 0; // GSM Init
+    while (gsm_init() != GSM_TRUE) {
+        printf("ERROR: GSM module not initialized \n");
+        printf("The GSM module response test is not working properly \n");
+        printf("Please check whether the module is connected or whether the power switch is turned on \n");
+        GSM_DELAY(500);
+    }
+    printf("Passed the GSM module response test \n");
+    GSM_DELAY(1000);
+
+    // Set the text mode
+    if (gsm_cmd("AT+CMGF=1\r", "OK", 100) != GSM_TRUE) {
+        printf("ERROR: Text mode setting \n");
+    }
+    GSM_DELAY(1000);
+
+    printf("Waiting for GSM module initializationa \n");
+    while (IsInsertCard() != GSM_TRUE) {
+        if (++testCard > 20) {
+            printf("ERROR: Phone card not detcted \n");
+            printf("If the phone card is not detected, please power off and reconnect the phone card \n");
+        }
+        GSM_DELAY(1000);
+    }
+    printf("GSM Init Completed \n");
+    GSM_DELAY(1000);
+}
+
+void GSM_Dialup(void)
+{
+    char *rebuff; // 拨号使用
+    printf("Dial-up test after 5 seconds...\n");
+    GSM_DELAY(5000);                     // Delay
+    gsm_call("13704161756");             // Call the number
+    rebuff = gsm_waitask(0);             // Receive a response
+    if (strstr(rebuff, "ATD") != NULL) { // The response is OK
+        printf("Calling now \n");
+        GSM_CLEAN_RX();          // Clear the receive buffer
+        rebuff = gsm_waitask(0); // Wait for it to disappear again
+
+        if (strstr(rebuff, "NO CARRIER") != NULL) { // Respond NO CARRIER, End Call
+            printf("End Call \n");
+        } else if (strstr(rebuff, "NO ANSWER") != NULL) { // Pespond NO ANSWER, End Call
+            printf("No Answer \n");
+        }
+    }
+    GSM_CLEAN_RX(); // Clear the receive buffer
+}
+
+void GSM_Messeage(void)
+{
+    char MessageNum[] = "13704161756"; // 短信接收号码
+    printf("SMS starts after 5 seconds... \n");
+    GSM_DELAY(5000); // Delay 5s
+
+    if (gsm_sms((char *)MessageNum, "Test 04-26") == GSM_TRUE) { // Send Message
+        printf(":Message is already send to  %s \n", MessageNum);
+    } else {
+        printf("If the SMS message cannot be sent, Please confirm that the destination MessageNumber is valid \n");
+    }
+    GSM_DELAY(2000); // Delay 2s
+}
 /*
  * 函数名：fputc
  * 描述  ：重定向c库函数printf到GSM_USARTx

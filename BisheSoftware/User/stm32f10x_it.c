@@ -22,6 +22,7 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+#include <stdio.h>
 #include "stm32f10x_it.h"
 #include "bsp_sdio_sdcard.h"
 #include "bsp_usart.h"
@@ -32,7 +33,13 @@
 #include "bsp_sr501.h"
 #include "bsp_sound.h"
 // #include "bsp_mq.h"
-#include <stdio.h>
+#include "bsp_oled.h"
+#include "bsp_esp8266.h"
+
+
+/*-Global Variable -----------------------------------------------------------*/
+// const char MessageNum[] = "13704161756"; // 短信接收号码
+// char PhoneNum[20] = {13704161756}; // 电话拨打号码
 
 /** @addtogroup STM32F10x_StdPeriph_Template
  * @{
@@ -195,18 +202,9 @@ void SDIO_IRQHandler(void)
     SD_ProcessIRQSrc();
 }
 
-// void SR501_IRQHandler(void)
-// {
-//     // 确保是否产生了EXTI Line中断
-//     if (EXTI_GetITStatus(SR501_INT_EXTI_LINE) != RESET) {
-//         /* 打开蜂鸣器 */
-//         Sound_Controller(Sound_Open);
-//         /* 点亮LED */
-//         GPIO_ResetBits(LED1_GPIO_PORT, LED1_GPIO_PIN);
-//         /* 清除中断标志位 */
-//         EXTI_ClearITPendingBit(SR501_INT_EXTI_LINE);
-//     }
-// }
+void SR501_IRQHandler(void)
+{
+}
 
 void MQ2_IRQHandler(void)
 {
